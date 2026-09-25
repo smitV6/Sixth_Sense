@@ -5,20 +5,24 @@ import { useProjectStore } from '@/lib/project-store';
 import { AlertCircle, AlertTriangle, Sparkles, ArrowRight } from 'lucide-react';
 
 export default function DeveloperDashboard() {
+  const currentDeveloperId = useProjectStore(state => state.currentDeveloperId);
   const projects = useProjectStore(state => state.projects);
 
-  // Calculate aggregate stats
-  const activeProjects = projects.filter(p => p.status === 'in_development').length;
-  const totalRequirements = projects.reduce((sum, p) => sum + p.coreRequirements.length + p.addedRequirements.length, 0);
-  const completedRequirements = projects.reduce(
+  // Filter projects for current developer
+  const myProjects = projects.filter(p => p.sentToDeveloperId === currentDeveloperId && p.status === 'in_development');
+
+  // Calculate stats for current developer only
+  const activeProjects = myProjects.length;
+  const totalRequirements = myProjects.reduce((sum, p) => sum + p.coreRequirements.length + p.addedRequirements.length, 0);
+  const completedRequirements = myProjects.reduce(
     (sum, p) => sum + [...p.coreRequirements, ...p.addedRequirements].filter(r => r.status === 'completed').length,
     0,
   );
-  const totalCommits = projects.reduce((sum, p) => sum + (p.commits?.length || 0), 0);
-  const totalScopeAlerts = projects.reduce((sum, p) => sum + (p.scopeAlerts?.length || 0), 0);
+  const totalCommits = myProjects.reduce((sum, p) => sum + (p.commits?.length || 0), 0);
+  const totalScopeAlerts = myProjects.reduce((sum, p) => sum + (p.scopeAlerts?.length || 0), 0);
 
-  // Get insights from projects with scope alerts
-  const scopeAlertInsights = projects
+  // Get insights from current developer's projects with scope alerts
+  const scopeAlertInsights = myProjects
     .filter(p => (p.scopeAlerts?.length || 0) > 0)
     .flatMap(p =>
       p.scopeAlerts!.filter(alert => alert.severity === 'high' || alert.severity === 'critical').map(alert => ({
@@ -115,7 +119,13 @@ export default function DeveloperDashboard() {
       <div>
         <h2 className="text-2xl font-bold text-slate-900 mb-6">Active Projects</h2>
         <div className="grid gap-4">
-          {projects.map(project => {
+          {myProjects.length === 0 ? (
+            <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 p-12 text-center">
+              <p className="text-slate-600 mb-4">No active projects</p>
+              <p className="text-sm text-slate-500">Go to Client Requests to accept a project</p>
+            </div>
+          ) : (
+            myProjects.map(project => {
             const allRequirements = [...project.coreRequirements, ...project.addedRequirements];
             const completedCount = allRequirements.filter(r => r.status === 'completed').length;
             const pendingAlerts = (project.scopeAlerts || []).filter(a => a.status === 'open').length;
@@ -172,7 +182,8 @@ export default function DeveloperDashboard() {
                 )}
               </Link>
             );
-          })}
+            })
+          )}
         </div>
       </div>
     </div>

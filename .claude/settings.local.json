@@ -30,7 +30,11 @@
       "Bash(curl -s https://sixth-sense-xok9.vercel.app)",
       "Bash(git pull *)",
       "Bash(git restore *)",
-      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")"
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "Bash(curl -s \"https://sixth-sense-xok9.vercel.app/developer\")",
+      "Bash(echo \"// Vercel redeploy trigger - $\\(date\\)\")",
+      "Bash(git commit *)",
+      "Bash(echo \"// Vercel clean rebuild - $\\(date\\)\")"
     ]
   }
 }
