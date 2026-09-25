@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MOCK_DEVELOPERS } from '@/lib/mock-developers';
 import { useProjectStore } from '@/lib/project-store';
 import { useToastStore } from '@/lib/toast-store';
@@ -10,6 +10,20 @@ import { Code } from 'lucide-react';
 export default function DevelopersPage() {
   const [selectedProject, setSelectedProject] = useState<string>('');
   const [confirmModal, setConfirmModal] = useState<{ developer: string; open: boolean }>({ developer: '', open: false });
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark');
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDarkMode(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
   const sendProject = useProjectStore(state => state.sendProjectToDeveloper);
   const { projects } = useProjectStore();
   const { addToast } = useToastStore();
@@ -40,17 +54,29 @@ export default function DevelopersPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Find a Developer</h1>
-        <p className="text-slate-600 mt-2">Choose a developer to send your project</p>
+        <h1 className={`text-3xl font-bold ${darkMode ? 'text-slate-50' : 'text-slate-900'}`}>Find a Developer</h1>
+        <p className={`mt-2 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>Choose a developer to send your project</p>
       </div>
 
       {projects.length > 0 && (
-        <div className="bg-indigo-50 p-6 rounded-xl border-2 border-indigo-200">
-          <label className="block text-sm font-semibold text-slate-900 mb-3">Select a project to send:</label>
+        <div className={`p-6 rounded-xl border-2 ${
+          darkMode
+            ? 'bg-indigo-900/20 border-indigo-800/30'
+            : 'bg-indigo-50 border-indigo-200'
+        }`}>
+          <label className={`block text-sm font-semibold mb-3 ${
+            darkMode ? 'text-indigo-200' : 'text-slate-900'
+          }`}>
+            Select a project to send:
+          </label>
           <select
             value={selectedProject}
             onChange={e => setSelectedProject(e.target.value)}
-            className="w-full px-4 py-2 border-2 border-indigo-300 rounded-lg focus:outline-none focus:border-indigo-600 bg-white"
+            className={`w-full px-4 py-2 border-2 rounded-lg focus:outline-none ${
+              darkMode
+                ? 'bg-slate-800 border-slate-700 text-slate-100 focus:border-indigo-500'
+                : 'bg-white border-indigo-300 text-slate-900 focus:border-indigo-600'
+            }`}
           >
             <option value="">Choose a project...</option>
             {projects.map(project => (
@@ -64,7 +90,11 @@ export default function DevelopersPage() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {MOCK_DEVELOPERS.map(dev => (
-          <div key={dev.id} className="bg-white rounded-xl border-2 border-slate-200 p-6 hover:border-indigo-300 hover:shadow-lg transition flex flex-col">
+          <div key={dev.id} className={`rounded-xl border-2 p-6 hover:shadow-lg transition flex flex-col ${
+            darkMode
+              ? 'bg-slate-800 border-slate-700 hover:border-indigo-500'
+              : 'bg-white border-slate-200 hover:border-indigo-300'
+          }`}>
             <div className="flex items-start gap-4 mb-6">
               <div
                 className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-400 to-violet-400 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0"
@@ -72,33 +102,47 @@ export default function DevelopersPage() {
                 {dev.name.split(' ').map(n => n[0]).join('')}
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-slate-900">{dev.name}</h3>
-                <p className="text-sm text-slate-600">{dev.title}</p>
+                <h3 className={`text-xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
+                  {dev.name}
+                </h3>
+                <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>{dev.title}</p>
               </div>
             </div>
 
             <div className="mb-6 flex-1">
               <div className="mb-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <Code className="w-4 h-4 text-indigo-600" />
-                  <span className="text-sm font-semibold text-slate-900">Skills</span>
+                  <Code className={`w-4 h-4 ${darkMode ? 'text-indigo-400' : 'text-indigo-600'}`} />
+                  <span className={`text-sm font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                    Skills
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {dev.skills.map(skill => (
-                    <div key={skill} className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-medium">
+                    <div key={skill} className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      darkMode
+                        ? 'bg-slate-700 text-slate-300'
+                        : 'bg-slate-100 text-slate-700'
+                    }`}>
                       {skill}
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-slate-200">
+              <div className={`grid grid-cols-2 gap-4 py-4 border-t border-b ${
+                darkMode ? 'border-slate-700' : 'border-slate-200'
+              }`}>
                 <div>
-                  <div className="text-xs text-slate-600">Completed Projects</div>
-                  <div className="text-2xl font-bold text-slate-900">{dev.projects}</div>
+                  <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                    Completed Projects
+                  </div>
+                  <div className={`text-2xl font-bold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                    {dev.projects}
+                  </div>
                 </div>
                 <div>
-                  <div className="text-xs text-slate-600">Status</div>
+                  <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>Status</div>
                   <div className={`text-lg font-bold ${
                     dev.availability === 'available' ? 'text-green-600' : 'text-yellow-600'
                   }`}>
@@ -115,13 +159,19 @@ export default function DevelopersPage() {
                 className={`w-full py-3 rounded-lg font-semibold transition ${
                   selectedProject
                     ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                    : darkMode
+                      ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                      : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                 }`}
               >
                 Select Developer
               </button>
             ) : (
-              <button className="w-full py-3 bg-slate-200 text-slate-600 rounded-lg font-semibold cursor-not-allowed">
+              <button className={`w-full py-3 rounded-lg font-semibold cursor-not-allowed ${
+                darkMode
+                  ? 'bg-slate-700 text-slate-500'
+                  : 'bg-slate-200 text-slate-600'
+              }`}>
                 View Profile
               </button>
             )}
@@ -131,28 +181,52 @@ export default function DevelopersPage() {
 
       {confirmModal.open && selectedProjectData && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-8 max-w-md w-full">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Send {selectedProjectData.name} to {MOCK_DEVELOPERS.find(d => d.id === confirmModal.developer)?.name}?</h2>
+          <div className={`rounded-xl p-8 max-w-md w-full ${
+            darkMode ? 'bg-slate-800' : 'bg-white'
+          }`}>
+            <h2 className={`text-2xl font-bold mb-6 ${
+              darkMode ? 'text-slate-100' : 'text-slate-900'
+            }`}>
+              Send {selectedProjectData.name} to {MOCK_DEVELOPERS.find(d => d.id === confirmModal.developer)?.name}?
+            </h2>
 
-            <div className="bg-slate-50 p-4 rounded-lg mb-6 space-y-2">
+            <div className={`p-4 rounded-lg mb-6 space-y-2 ${
+              darkMode ? 'bg-slate-700' : 'bg-slate-50'
+            }`}>
               <div className="flex justify-between">
-                <span className="text-slate-700">Project requirements:</span>
-                <span className="font-semibold text-slate-900">{selectedProjectData.coreRequirements.length + selectedProjectData.addedRequirements.length}</span>
+                <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>
+                  Project requirements:
+                </span>
+                <span className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                  {selectedProjectData.coreRequirements.length + selectedProjectData.addedRequirements.length}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-700">Optional add-ons:</span>
-                <span className="font-semibold text-slate-900">{selectedProjectData.optionalAddOns.filter(a => a.status === 'added').length}</span>
+                <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>
+                  Optional add-ons:
+                </span>
+                <span className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                  {selectedProjectData.optionalAddOns.filter(a => a.status === 'added').length}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-700">Estimated scope:</span>
-                <span className="font-semibold text-slate-900">Medium</span>
+                <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>
+                  Estimated scope:
+                </span>
+                <span className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                  Medium
+                </span>
               </div>
             </div>
 
             <div className="flex gap-4">
               <button
                 onClick={() => setConfirmModal({ developer: '', open: false })}
-                className="flex-1 px-6 py-3 border-2 border-slate-300 text-slate-900 rounded-lg hover:border-slate-400 transition font-semibold"
+                className={`flex-1 px-6 py-3 border-2 rounded-lg transition font-semibold ${
+                  darkMode
+                    ? 'border-slate-600 text-slate-200 hover:border-slate-500'
+                    : 'border-slate-300 text-slate-900 hover:border-slate-400'
+                }`}
               >
                 Cancel
               </button>
