@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Menu, X, ChevronDown, Moon, Sun, LogOut } from 'lucide-react';
 import { useProjectStore } from '@/lib/project-store';
 import { MOCK_DEVELOPERS } from '@/lib/mock-developers';
 
@@ -17,11 +17,41 @@ interface NavItem {
 export function DashboardShell({ children, userRole, userName }: { children: React.ReactNode; userRole: 'client' | 'developer'; userName: string }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showDeveloperMenu, setShowDeveloperMenu] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('darkMode') === 'true';
+    }
+    return false;
+  });
   const pathname = usePathname();
+  const router = useRouter();
   const currentDeveloperId = useProjectStore(state => state.currentDeveloperId);
   const setCurrentDeveloper = useProjectStore(state => state.setCurrentDeveloper);
 
   const currentDeveloper = MOCK_DEVELOPERS.find(d => d.id === currentDeveloperId) || MOCK_DEVELOPERS[0];
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem('darkMode', String(newMode));
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  const handleLogout = () => {
+    router.push('/');
+  };
 
   const clientNav: NavItem[] = [
     { href: '/client', label: 'Dashboard', icon: '📊' },
@@ -53,12 +83,16 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
   const navItems = userRole === 'client' ? clientNav : developerNav;
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className={`flex h-screen ${darkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
       {/* Sidebar */}
       <div
         className={`${
           sidebarOpen ? 'w-64' : 'w-0'
-        } md:w-64 bg-gradient-to-b from-slate-900 to-slate-800 text-white transition-all duration-300 overflow-hidden flex flex-col`}
+        } md:w-64 transition-all duration-300 overflow-hidden flex flex-col ${
+          darkMode
+            ? 'bg-gradient-to-b from-slate-950 to-slate-900 text-white'
+            : 'bg-gradient-to-b from-slate-900 to-slate-800 text-white'
+        }`}
       >
         <div className="p-6 border-b border-slate-700">
           <Link href="/" className="text-xl font-bold text-white">
@@ -111,56 +145,95 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+        <div className={`${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} border-b px-6 py-4 flex items-center justify-between transition-colors`}>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="md:hidden p-2 hover:bg-slate-100 rounded-lg"
+              className={`md:hidden p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'}`}
             >
-              {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {sidebarOpen ? <X className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-slate-900'}`} /> : <Menu className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-slate-900'}`} />}
             </button>
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               Good morning, {userName} 👋
             </h1>
           </div>
 
-          {userRole === 'developer' && (
-            <div className="relative">
-              <button
-                onClick={() => setShowDeveloperMenu(!showDeveloperMenu)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition"
-              >
-                <span className="text-sm font-medium text-slate-900">Viewing as: {currentDeveloper.name}</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${showDeveloperMenu ? 'rotate-180' : ''}`} />
-              </button>
+          <div className="flex items-center gap-4">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-lg transition-colors ${darkMode ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              title={darkMode ? 'Light Mode' : 'Dark Mode'}
+            >
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
 
-              {showDeveloperMenu && (
-                <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
-                  {MOCK_DEVELOPERS.map(dev => (
-                    <button
-                      key={dev.id}
-                      onClick={() => {
-                        setCurrentDeveloper(dev.id);
-                        setShowDeveloperMenu(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 text-sm border-b border-slate-100 last:border-b-0 transition ${
-                        dev.id === currentDeveloperId
-                          ? 'bg-indigo-50 font-semibold text-indigo-700'
-                          : 'hover:bg-slate-50 text-slate-900'
-                      }`}
-                    >
-                      <div className="font-medium">{dev.name}</div>
-                      <div className="text-xs text-slate-600">{dev.title}</div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+            {userRole === 'developer' && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowDeveloperMenu(!showDeveloperMenu)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
+                    darkMode
+                      ? 'border-slate-700 bg-slate-800 hover:bg-slate-700 text-white'
+                      : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-900'
+                  }`}
+                >
+                  <span className="text-sm font-medium">Viewing as: {currentDeveloper.name}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform ${showDeveloperMenu ? 'rotate-180' : ''}`} />
+                </button>
+
+                {showDeveloperMenu && (
+                  <div className={`absolute right-0 mt-2 w-56 rounded-lg shadow-lg z-50 border ${
+                    darkMode
+                      ? 'bg-slate-800 border-slate-700'
+                      : 'bg-white border-slate-200'
+                  }`}>
+                    {MOCK_DEVELOPERS.map(dev => (
+                      <button
+                        key={dev.id}
+                        onClick={() => {
+                          setCurrentDeveloper(dev.id);
+                          setShowDeveloperMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 text-sm border-b transition-colors ${
+                          darkMode ? 'border-slate-700' : 'border-slate-100'
+                        } last:border-b-0 ${
+                          dev.id === currentDeveloperId
+                            ? darkMode
+                              ? 'bg-indigo-900/50 font-semibold text-indigo-300'
+                              : 'bg-indigo-50 font-semibold text-indigo-700'
+                            : darkMode
+                              ? 'hover:bg-slate-700 text-slate-200'
+                              : 'hover:bg-slate-50 text-slate-900'
+                        }`}
+                      >
+                        <div className="font-medium">{dev.name}</div>
+                        <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>{dev.title}</div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                darkMode
+                  ? 'bg-red-900/20 text-red-400 hover:bg-red-900/30'
+                  : 'bg-red-50 text-red-600 hover:bg-red-100'
+              }`}
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm font-medium">Logout</span>
+            </button>
+          </div>
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto p-6">
+        <div className={`flex-1 overflow-auto p-6 ${darkMode ? 'bg-slate-950' : 'bg-slate-50'} transition-colors`}>
           {children}
         </div>
       </div>

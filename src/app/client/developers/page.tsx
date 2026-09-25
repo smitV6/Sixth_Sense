@@ -31,7 +31,7 @@ export default function DevelopersPage() {
     addToast('Project sent successfully! ✓', 'success');
 
     setTimeout(() => {
-      router.push(`/developer/requests`);
+      router.push(`/client/projects`);
     }, 1500);
   };
 
