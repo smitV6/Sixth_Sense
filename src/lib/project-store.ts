@@ -23,7 +23,7 @@ interface ProjectStore {
   sendProjectToDeveloper: (projectId: string, developerId: string) => void;
   addDeveloperRequest: (request: DeveloperRequest) => void;
   getDeveloperRequests: (developerId: string) => (DeveloperRequest & { project: Project })[];
-  updateDeveloperRequest: (projectId: string, developerId: string, status: 'accepted' | 'rejected') => void;
+  updateDeveloperRequest: (projectId: string, developerId: string, status: 'accepted' | 'rejected' | 'clarify', clarifyMessage?: string) => void;
   setCurrentDeveloper: (developerId: string) => void;
 
   // Product methods
@@ -180,11 +180,11 @@ export const useProjectStore = create<ProjectStore>()(
         }));
       },
 
-      updateDeveloperRequest: (projectId, developerId, status) => {
+      updateDeveloperRequest: (projectId, developerId, status, clarifyMessage) => {
         set(state => ({
           developerRequests: state.developerRequests.map(req =>
             req.projectId === projectId && req.developerId === developerId
-              ? { ...req, status }
+              ? { ...req, status, ...(clarifyMessage && { clarifyMessage }) }
               : req,
           ),
         }));

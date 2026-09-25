@@ -136,7 +136,8 @@ export interface DeveloperRequest {
   developerId: string;
   projectId: string;
   sentAt: number;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'clarify';
+  clarifyMessage?: string;
 }
 
 export interface ProjectFormInput {

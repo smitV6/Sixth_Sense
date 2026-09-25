@@ -35,6 +35,7 @@ export default function ClientRequestsPage() {
       addToast('Project rejected. The client will be notified.', 'success');
     } else if (selectedAction === 'clarify') {
       if (clarifyMessage.trim()) {
+        updateDeveloperRequest(selectedProjectId, currentDeveloperId, 'clarify', clarifyMessage);
         addToast(`Clarification requested: "${clarifyMessage}"`, 'success');
       } else {
         addToast('Please enter a clarification message.', 'error');
