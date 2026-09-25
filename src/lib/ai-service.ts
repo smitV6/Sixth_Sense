@@ -1,4 +1,4 @@
-import { ProjectFormInput, Requirement, Suggestion, AddOn, Project, TimelineEvent } from './types';
+import { ProjectFormInput, Requirement, Suggestion, AddOn, TimelineEvent } from './types';
 
 export interface AIAnalysisResult {
   summary: string;

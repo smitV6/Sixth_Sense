@@ -1,4 +1,4 @@
-import { Project, GitCommit, ScopeAlert, ActivityEvent, ProjectHealth } from './types';
+import { Project, GitCommit, ScopeAlert, ActivityEvent } from './types';
 
 const stylecartCommits: GitCommit[] = [
   {

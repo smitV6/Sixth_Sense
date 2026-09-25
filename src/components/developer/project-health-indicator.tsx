@@ -1,4 +1,4 @@
-import { TrendingUp, AlertCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle } from 'lucide-react';
 import { ProjectHealth } from '@/lib/types';
 
 interface ProjectHealthIndicatorProps {

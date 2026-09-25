@@ -88,7 +88,7 @@ export function detectScopeAdditions(commits: GitCommit[], requirements: Require
       const analysis = analyzeCommitToRequirement(commit, requirements);
       return analysis.classification === 'scope_addition';
     })
-    .map((commit, index) => {
+    .map(commit => {
       const featureName = extractFeatureName(commit.message);
       return {
         id: `alert-scope-${commit.id}`,

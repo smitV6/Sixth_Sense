@@ -11,8 +11,6 @@ export function RequirementMapping({ requirements, commits }: RequirementMapping
     <div className="space-y-4">
       {requirements.map(req => {
         const matchedCommits = commits.filter(c => c.relatedRequirementId === req.id);
-        const avgConfidence =
-          matchedCommits.length > 0 ? matchedCommits.reduce((sum, c) => sum + (c.confidence || 0.85), 0) / matchedCommits.length : 0;
 
         const statusIcon =
           req.status === 'completed' ? (

@@ -1,4 +1,4 @@
-import { Project, Feedback, Requirement, FeedbackCluster, ProductInsight, PriorityLevel } from './types';
+import { Project, Feedback, Requirement, PriorityLevel } from './types';
 
 export interface RequirementIntelligence {
   requirement: Requirement;
@@ -92,7 +92,6 @@ export function analyzeFeedbackForRequirement(
 
   const positive = related.filter(f => f.sentiment === 'positive').length;
   const negative = related.filter(f => f.sentiment === 'negative').length;
-  const neutral = related.length - positive - negative;
 
   const sentiment = negative > positive ? 'negative' : positive > negative ? 'positive' : 'neutral';
   const samples = related.slice(0, 3).map(f => f.text);
@@ -108,7 +107,6 @@ export function analyzeRequirementIntelligence(
 ): RequirementIntelligence {
   const feedbackAnalysis = analyzeFeedbackForRequirement(requirement, feedback);
   const commits = (project.commits || []).filter(c => c.relatedRequirementId === requirement.id);
-  const scopeAlerts = (project.scopeAlerts || []).filter(a => a.description.includes(requirement.name));
 
   let implementationStatus: 'not_started' | 'partial' | 'complete' = 'not_started';
   if (requirement.status === 'completed') implementationStatus = 'complete';
@@ -187,7 +185,6 @@ export function generateRecommendations(
   requirementAnalyses: RequirementIntelligence[],
 ): ActionRecommendation[] {
   const recommendations: ActionRecommendation[] = [];
-  const allRequirements = [...project.coreRequirements, ...project.addedRequirements];
 
   requirementAnalyses.forEach((analysis, idx) => {
     if (analysis.riskLevel === 'critical') {
@@ -328,9 +325,6 @@ export function generateSprintSuggestion(
       estimatedEffort: rec.estimatedEffort || 'medium',
     });
   });
-
-  const allRequirements = [...project.coreRequirements, ...project.addedRequirements];
-  const incompleteHigh = allRequirements.filter(r => r.status !== 'completed' && r.priority === 'high').length;
 
   let goal = 'Complete high-priority requirements and address user feedback';
   if (tasks.some(t => t.priority === 'critical')) {

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 
 interface NavItem {
   href: string;
@@ -21,9 +21,6 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
     { href: '/client/projects', label: 'My Projects', icon: '📁' },
     { href: '/client/projects/new', label: 'Create Project', icon: '➕' },
     { href: '/client/developers', label: 'Find Developers', icon: '👥' },
-    { href: '/client/suggestions', label: 'AI Suggestions', icon: '💡' },
-    { href: '/client/messages', label: 'Messages', icon: '💬' },
-    { href: '/client/profile', label: 'Profile', icon: '⚙️' },
   ];
 
   const developerNav: NavItem[] = [
@@ -44,10 +41,6 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
         { href: '/developer/my-product/requirements', label: 'Requirements' },
       ],
     },
-    { href: '/developer/github', label: 'GitHub', icon: '🔗' },
-    { href: '/developer/scope-monitor', label: 'Scope Monitor', icon: '📈' },
-    { href: '/developer/assistant', label: 'AI Assistant', icon: '🤖' },
-    { href: '/developer/settings', label: 'Settings', icon: '⚙️' },
   ];
 
   const navItems = userRole === 'client' ? clientNav : developerNav;
@@ -106,12 +99,6 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
             );
           })}
         </nav>
-        <div className="p-4 border-t border-slate-700">
-          <button className="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 font-medium text-sm">
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
-        </div>
       </div>
 
       {/* Main Content */}

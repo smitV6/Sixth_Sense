@@ -2,8 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Project, DeveloperRequest, Requirement, AddOn, Product } from './types';
-import { generateProjectTimeline } from './ai-service';
+import { Project, DeveloperRequest, Requirement, Product } from './types';
 import { STYLECART, CAMPUSCONNECT, FITFLOW } from './mock-project-data';
 import { DEMO_PRODUCT, MOCK_FEEDBACK } from './mock-feedback-data';
 import { analyzeProduct } from './feedback-service';
@@ -23,6 +22,7 @@ interface ProjectStore {
   sendProjectToDeveloper: (projectId: string, developerId: string) => void;
   addDeveloperRequest: (request: DeveloperRequest) => void;
   getDeveloperRequests: (developerId: string) => (DeveloperRequest & { project: Project })[];
+  updateDeveloperRequest: (projectId: string, developerId: string, status: 'accepted' | 'rejected') => void;
 
   // Product methods
   getProduct: (id: string) => Product | undefined;
@@ -30,52 +30,6 @@ interface ProjectStore {
   addRequirementToProduct: (productId: string, requirement: Requirement) => void;
 }
 
-const SEED_PROJECT: Project = {
-  id: 'stylecart-demo',
-  name: 'StyleCart',
-  description: 'E-commerce platform for clothing business',
-  status: 'ready_for_development',
-  progress: 0,
-  targetUsers: 'Young adults looking for affordable fashion',
-  platform: 'web',
-  deadline: '2-3_months',
-  coreRequirements: [
-    { id: '1', name: 'User registration & login', description: 'Allow users to create accounts and sign in', status: 'pending', priority: 'high' },
-    { id: '2', name: 'Product catalogue', description: 'Display all available products', status: 'pending', priority: 'high' },
-    { id: '3', name: 'Product search', description: 'Search and filter products', status: 'pending', priority: 'high' },
-    { id: '4', name: 'Product details', description: 'View detailed product information', status: 'pending', priority: 'high' },
-    { id: '5', name: 'Shopping cart', description: 'Add products to cart', status: 'pending', priority: 'high' },
-    { id: '6', name: 'Checkout', description: 'Complete purchase process', status: 'pending', priority: 'high' },
-    { id: '7', name: 'Online payment', description: 'Process payments securely', status: 'pending', priority: 'high' },
-    { id: '8', name: 'Order tracking', description: 'Users can track their orders', status: 'pending', priority: 'high' },
-  ],
-  addedRequirements: [
-    { id: 's1', name: 'Payment Failure Handling', description: 'What happens if a payment fails?', status: 'pending', priority: 'high' },
-    { id: 's2', name: 'Refund & Cancellation Flow', description: 'Cancel orders and request refunds', status: 'pending', priority: 'high' },
-    { id: 's3', name: 'Mobile Responsiveness', description: 'Works across screen sizes', status: 'pending', priority: 'medium' },
-    { id: 's4', name: 'Security & Data Protection', description: 'Protect user data and payments', status: 'pending', priority: 'high' },
-  ],
-  optionalAddOns: [
-    { id: 'a1', name: 'Wishlist', description: 'Save products for later', status: 'available' },
-    { id: 'a2', name: 'Product Reviews', description: 'Rate and review products', status: 'available' },
-    { id: 'a3', name: 'AI Recommendations', description: 'Personalized product suggestions', status: 'available' },
-    { id: 'a4', name: 'Loyalty Program', description: 'Reward returning customers', status: 'available' },
-    { id: 'a5', name: 'Personalized Homepage', description: 'Custom product discovery', status: 'available' },
-  ],
-  suggestions: [],
-  projectHealth: {
-    clarity: 86,
-    note: 'Well-defined. Clarify payment handling, cancellation and security before development.',
-  },
-  timeline: [
-    { id: '1', label: 'Project created', completed: true },
-    { id: '2', label: 'AI analysis completed', completed: true },
-    { id: '3', label: 'Requirements finalized', completed: true },
-    { id: '4', label: 'Developer selection pending', completed: false },
-  ],
-  summary: "You're building an e-commerce platform for fashion.",
-  createdAt: Date.now() - 86400000,
-};
 
 const INITIAL_PROJECTS = [STYLECART, CAMPUSCONNECT, FITFLOW];
 
@@ -221,6 +175,22 @@ export const useProjectStore = create<ProjectStore>()(
           ...req,
           project: get().getProject(req.projectId)!,
         }));
+      },
+
+      updateDeveloperRequest: (projectId, developerId, status) => {
+        set(state => ({
+          developerRequests: state.developerRequests.map(req =>
+            req.projectId === projectId && req.developerId === developerId
+              ? { ...req, status }
+              : req,
+          ),
+        }));
+
+        if (status === 'accepted') {
+          get().updateProject(projectId, { status: 'in_development' });
+        } else if (status === 'rejected') {
+          get().updateProject(projectId, { status: 'ready_for_development' });
+        }
       },
     }),
     {

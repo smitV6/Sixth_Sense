@@ -3,35 +3,50 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useProjectStore } from '@/lib/project-store';
+import { useToastStore } from '@/lib/toast-store';
 import { ArrowRight, Clock, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
 
 const CURRENT_DEVELOPER_ID = '1'; // Alex Sharma
 
 export default function ClientRequestsPage() {
   const getDeveloperRequests = useProjectStore(state => state.getDeveloperRequests);
+  const updateDeveloperRequest = useProjectStore(state => state.updateDeveloperRequest);
+  const { addToast } = useToastStore();
   const requests = getDeveloperRequests(CURRENT_DEVELOPER_ID);
   const [showModal, setShowModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState<'accept' | 'reject' | 'clarify' | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [clarifyMessage, setClarifyMessage] = useState('');
 
   const handleAction = (projectId: string, action: 'accept' | 'reject' | 'clarify') => {
     setSelectedProjectId(projectId);
     setSelectedAction(action);
+    setClarifyMessage('');
     setShowModal(true);
   };
 
   const confirmAction = () => {
+    if (!selectedProjectId) return;
+
     if (selectedAction === 'accept') {
-      console.log('Accepting project:', selectedProjectId);
-      // TODO: Update project status in store
+      updateDeveloperRequest(selectedProjectId, CURRENT_DEVELOPER_ID, 'accepted');
+      addToast('Project accepted! You can now start development.', 'success');
     } else if (selectedAction === 'reject') {
-      console.log('Rejecting project:', selectedProjectId);
-      // TODO: Update project status in store
+      updateDeveloperRequest(selectedProjectId, CURRENT_DEVELOPER_ID, 'rejected');
+      addToast('Project rejected. The client will be notified.', 'success');
     } else if (selectedAction === 'clarify') {
-      console.log('Requesting clarification for project:', selectedProjectId);
-      // TODO: Update project status in store
+      if (clarifyMessage.trim()) {
+        addToast(`Clarification requested: "${clarifyMessage}"`, 'success');
+      } else {
+        addToast('Please enter a clarification message.', 'error');
+        return;
+      }
     }
+
     setShowModal(false);
+    setClarifyMessage('');
+    setSelectedProjectId(null);
+    setSelectedAction(null);
   };
 
   return (
@@ -44,12 +59,12 @@ export default function ClientRequestsPage() {
       {requests.length === 0 ? (
         <div className="bg-slate-50 rounded-xl border-2 border-dashed border-slate-300 p-12 text-center">
           <Clock className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-          <p className="text-slate-600 mb-4">No client requests yet</p>
-          <p className="text-sm text-slate-500">Client projects you receive will appear here</p>
+          <p className="text-slate-600 mb-4">No pending client requests</p>
+          <p className="text-sm text-slate-500">New project requests will appear here</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {requests.map(({ project, sentAt }) => (
+          {requests.filter(r => r.status === 'pending').map(({ project, sentAt }) => (
             <div
               key={project.id}
               className="bg-white p-6 rounded-xl border-2 border-slate-200 hover:border-violet-300 hover:shadow-lg transition"
@@ -138,16 +153,26 @@ export default function ClientRequestsPage() {
                   ? 'Accept Project?'
                   : selectedAction === 'reject'
                     ? 'Reject Project?'
-                    : 'Request Clarification?'}
+                    : 'Request Clarification'}
               </h3>
               <p className="text-slate-600 mt-2">
                 {selectedAction === 'accept'
                   ? 'This project will be added to your active projects. You can start development immediately.'
                   : selectedAction === 'reject'
                     ? 'The client will be notified that you cannot take on this project.'
-                    : 'You can ask the client for more details or clarifications about the project requirements.'}
+                    : 'Ask the client for more details or clarifications about the project requirements.'}
               </p>
             </div>
+
+            {selectedAction === 'clarify' && (
+              <textarea
+                placeholder="Enter your clarification request..."
+                value={clarifyMessage}
+                onChange={e => setClarifyMessage(e.target.value)}
+                className="w-full p-3 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-blue-600 resize-none"
+                rows={4}
+              />
+            )}
 
             <div className="flex gap-3">
               <button
@@ -166,7 +191,7 @@ export default function ClientRequestsPage() {
                       : 'bg-blue-600 hover:bg-blue-700'
                 }`}
               >
-                {selectedAction === 'accept' ? 'Accept' : selectedAction === 'reject' ? 'Reject' : 'Request Clarification'}
+                {selectedAction === 'accept' ? 'Accept' : selectedAction === 'reject' ? 'Reject' : 'Send Clarification'}
               </button>
             </div>
           </div>
