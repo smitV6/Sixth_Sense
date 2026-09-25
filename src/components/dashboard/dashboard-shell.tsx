@@ -145,15 +145,15 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <div className={`${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} border-b px-6 py-4 flex items-center justify-between transition-colors`}>
+        <div className={`${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} border-b px-6 py-4 flex items-center justify-between transition-colors`}>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className={`md:hidden p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'}`}
+              className={`md:hidden p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-800 text-slate-100' : 'hover:bg-slate-100 text-slate-900'}`}
             >
-              {sidebarOpen ? <X className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-slate-900'}`} /> : <Menu className={`w-6 h-6 ${darkMode ? 'text-white' : 'text-slate-900'}`} />}
+              {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
-            <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            <h1 className={`text-2xl font-bold ${darkMode ? 'text-slate-50' : 'text-slate-900'}`}>
               Good morning, {userName} 👋
             </h1>
           </div>
@@ -162,7 +162,7 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleDarkMode}
-              className={`p-2 rounded-lg transition-colors ${darkMode ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              className={`p-2 rounded-lg transition-colors ${darkMode ? 'bg-slate-800 text-yellow-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
               title={darkMode ? 'Light Mode' : 'Dark Mode'}
             >
               {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -200,15 +200,15 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
                         } last:border-b-0 ${
                           dev.id === currentDeveloperId
                             ? darkMode
-                              ? 'bg-indigo-900/50 font-semibold text-indigo-300'
+                              ? 'bg-indigo-900 font-semibold text-indigo-100'
                               : 'bg-indigo-50 font-semibold text-indigo-700'
                             : darkMode
-                              ? 'hover:bg-slate-700 text-slate-200'
+                              ? 'hover:bg-slate-700 text-slate-100'
                               : 'hover:bg-slate-50 text-slate-900'
                         }`}
                       >
                         <div className="font-medium">{dev.name}</div>
-                        <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>{dev.title}</div>
+                        <div className={`text-xs ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{dev.title}</div>
                       </button>
                     ))}
                   </div>
@@ -221,7 +221,7 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
               onClick={handleLogout}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                 darkMode
-                  ? 'bg-red-900/20 text-red-400 hover:bg-red-900/30'
+                  ? 'bg-red-900 text-red-100 hover:bg-red-800'
                   : 'bg-red-50 text-red-600 hover:bg-red-100'
               }`}
               title="Logout"
