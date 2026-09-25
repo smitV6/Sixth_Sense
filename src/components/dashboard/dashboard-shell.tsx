@@ -2,12 +2,21 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, LogOut } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: string;
+  children?: { href: string; label: string }[];
+}
 
 export function DashboardShell({ children, userRole, userName }: { children: React.ReactNode; userRole: 'client' | 'developer'; userName: string }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
 
-  const clientNav = [
+  const clientNav: NavItem[] = [
     { href: '/client', label: 'Dashboard', icon: '📊' },
     { href: '/client/projects', label: 'My Projects', icon: '📁' },
     { href: '/client/projects/new', label: 'Create Project', icon: '➕' },
@@ -17,14 +26,25 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
     { href: '/client/profile', label: 'Profile', icon: '⚙️' },
   ];
 
-  const developerNav = [
+  const developerNav: NavItem[] = [
     { href: '/developer', label: 'Dashboard', icon: '📊' },
+    { href: '/developer/intelligence', label: 'Intelligence Hub', icon: '🧠' },
     { href: '/developer/requests', label: 'Client Requests', icon: '📥' },
     { href: '/developer/projects', label: 'My Projects', icon: '📁' },
-    { href: '/developer/products', label: 'My Products', icon: '📦' },
+    {
+      href: '/developer/my-product',
+      label: 'My Product',
+      icon: '📦',
+      children: [
+        { href: '/developer/my-product', label: 'Overview' },
+        { href: '/developer/my-product/feedback', label: 'Feedback Center' },
+        { href: '/developer/my-product/clusters', label: 'Clusters' },
+        { href: '/developer/my-product/feature-requests', label: 'Feature Requests' },
+        { href: '/developer/my-product/insights', label: 'AI Insights' },
+        { href: '/developer/my-product/requirements', label: 'Requirements' },
+      ],
+    },
     { href: '/developer/github', label: 'GitHub', icon: '🔗' },
-    { href: '/developer/feedback', label: 'User Feedback', icon: '💬' },
-    { href: '/developer/insights', label: 'AI Insights', icon: '🧠' },
     { href: '/developer/scope-monitor', label: 'Scope Monitor', icon: '📈' },
     { href: '/developer/assistant', label: 'AI Assistant', icon: '🤖' },
     { href: '/developer/settings', label: 'Settings', icon: '⚙️' },
@@ -46,17 +66,45 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
           </Link>
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map(item => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="block px-4 py-3 rounded-lg hover:bg-slate-700 transition-colors font-medium text-sm"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <span className="mr-3">{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map(item => {
+            const isActive = pathname === item.href;
+            const isSectionActive = item.children ? pathname.startsWith(item.href) : isActive;
+
+            return (
+              <div key={item.href}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors font-medium text-sm ${
+                    isSectionActive ? 'bg-violet-600/90 text-white' : 'hover:bg-slate-700'
+                  }`}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <span>
+                    <span className="mr-3">{item.icon}</span>
+                    {item.label}
+                  </span>
+                  {item.children && <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isSectionActive ? 'rotate-180' : ''}`} />}
+                </Link>
+
+                {item.children && isSectionActive && (
+                  <div className="ml-6 mt-1 space-y-0.5 border-l border-slate-700 pl-3">
+                    {item.children.map(child => (
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
+                          pathname === child.href ? 'text-violet-300 font-semibold' : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                        }`}
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </nav>
         <div className="p-4 border-t border-slate-700">
           <button className="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 font-medium text-sm">

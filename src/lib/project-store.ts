@@ -2,12 +2,16 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Project, DeveloperRequest, Requirement, AddOn } from './types';
+import { Project, DeveloperRequest, Requirement, AddOn, Product } from './types';
 import { generateProjectTimeline } from './ai-service';
+import { STYLECART, CAMPUSCONNECT, FITFLOW } from './mock-project-data';
+import { DEMO_PRODUCT, MOCK_FEEDBACK } from './mock-feedback-data';
+import { analyzeProduct } from './feedback-service';
 
 interface ProjectStore {
   projects: Project[];
   developerRequests: DeveloperRequest[];
+  products: Product[];
 
   createProject: (project: Project) => void;
   getProject: (id: string) => Project | undefined;
@@ -19,6 +23,11 @@ interface ProjectStore {
   sendProjectToDeveloper: (projectId: string, developerId: string) => void;
   addDeveloperRequest: (request: DeveloperRequest) => void;
   getDeveloperRequests: (developerId: string) => (DeveloperRequest & { project: Project })[];
+
+  // Product methods
+  getProduct: (id: string) => Product | undefined;
+  updateProduct: (id: string, updates: Partial<Product>) => void;
+  addRequirementToProduct: (productId: string, requirement: Requirement) => void;
 }
 
 const SEED_PROJECT: Project = {
@@ -68,17 +77,50 @@ const SEED_PROJECT: Project = {
   createdAt: Date.now() - 86400000,
 };
 
+const INITIAL_PROJECTS = [STYLECART, CAMPUSCONNECT, FITFLOW];
+
+// Build the demo product with data-driven clusters/insights/health computed from mock feedback
+function buildInitialProducts(): Product[] {
+  const { clusters, insights, health } = analyzeProduct(MOCK_FEEDBACK);
+  return [
+    {
+      ...DEMO_PRODUCT,
+      clusters,
+      insights,
+      healthScore: health.score,
+      requirements: [],
+    },
+  ];
+}
+
+const INITIAL_PRODUCTS = buildInitialProducts();
+
 export const useProjectStore = create<ProjectStore>()(
   persist(
     (set, get) => ({
-      projects: [SEED_PROJECT],
+      projects: INITIAL_PROJECTS,
       developerRequests: [],
+      products: INITIAL_PRODUCTS,
 
       createProject: project => set(state => ({ projects: [project, ...state.projects] })),
 
+      getProduct: id => get().products.find(p => p.id === id),
+
+      updateProduct: (id, updates) =>
+        set(state => ({
+          products: state.products.map(p => (p.id === id ? { ...p, ...updates } : p)),
+        })),
+
+      addRequirementToProduct: (productId, requirement) =>
+        set(state => ({
+          products: state.products.map(p =>
+            p.id === productId ? { ...p, requirements: [...(p.requirements || []), requirement] } : p,
+          ),
+        })),
+
       getProject: id => {
         const project = get().projects.find(p => p.id === id);
-        return project || SEED_PROJECT;
+        return project;
       },
 
       updateProject: (id, updates) =>

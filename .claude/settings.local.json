@@ -7,7 +7,15 @@
       "Bash(git init *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(grep -c \"^  {$\" src/lib/mock-feedback-data.ts)",
+      "Bash(npx eslint *)",
+      "Bash(npx tsx *)",
+      "Bash(git status *)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(curl -s \"http://localhost:3000/developer/intelligence\")",
+      "Bash(git remote *)"
     ]
   }
 }
