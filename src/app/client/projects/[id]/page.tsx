@@ -1,7 +1,7 @@
 'use client';
 
 import { useProjectStore } from '@/lib/project-store';
-import { CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function ProjectDetailsPage({ params }: { params: { id: string } }) {
   const getProject = useProjectStore(state => state.getProject);

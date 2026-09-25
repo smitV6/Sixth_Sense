@@ -5,7 +5,7 @@ import { MOCK_DEVELOPERS } from '@/lib/mock-developers';
 import { useProjectStore } from '@/lib/project-store';
 import { useToastStore } from '@/lib/toast-store';
 import { useRouter } from 'next/navigation';
-import { Code, MapPin, Award } from 'lucide-react';
+import { Code } from 'lucide-react';
 
 export default function DevelopersPage() {
   const [selectedProject, setSelectedProject] = useState<string>('');

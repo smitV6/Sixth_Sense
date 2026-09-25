@@ -15,7 +15,6 @@ import {
   AlertCircle,
   CheckCircle2,
   TrendingUp,
-  Users,
   AlertTriangle,
   Sparkles,
   Zap,
@@ -26,8 +25,7 @@ import {
 import { IntelligenceTimeline } from '@/components/developer/intelligence-timeline';
 import { IntelligenceSearch } from '@/components/developer/intelligence-search';
 
-const CURRENT_PROJECT_ID = 'stylecart-demo';
-const CURRENT_DEVELOPER_ID = '1';
+const CURRENT_PROJECT_ID = 'stylecart-dev';
 
 export default function IntelligenceHubPage() {
   const getProject = useProjectStore(state => state.getProject);
@@ -120,7 +118,7 @@ export default function IntelligenceHubPage() {
         >
           <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
             <Zap className="w-6 h-6 text-violet-600" />
-            What's Happening Right Now?
+            What&apos;s Happening Right Now?
           </h2>
           <ChevronRight className={`w-6 h-6 text-slate-400 transition-transform ${expandedSection === 'signals' ? 'rotate-90' : ''}`} />
         </button>
@@ -226,7 +224,7 @@ export default function IntelligenceHubPage() {
                     <div className="mt-3 p-3 bg-white bg-opacity-50 rounded-lg">
                       <div className="text-xs font-semibold text-slate-700 mb-2">Sample feedback:</div>
                       <blockquote className="text-sm text-slate-600 italic border-l-2 border-current pl-3">
-                        "{analysis.userComplaints[0]}"
+                        &quot;{analysis.userComplaints[0]}&quot;
                       </blockquote>
                     </div>
                   )}
@@ -269,7 +267,7 @@ export default function IntelligenceHubPage() {
                   <div className="space-y-2 pt-4 border-t border-green-200">
                     {opp.userFeedback.map((feedback, i) => (
                       <blockquote key={i} className="text-sm text-slate-600 italic border-l-2 border-green-400 pl-3">
-                        "{feedback}"
+                        &quot;{feedback}&quot;
                       </blockquote>
                     ))}
                   </div>

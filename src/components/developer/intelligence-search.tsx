@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Project, Feedback, Requirement } from '@/lib/types';
+import { Project, Feedback } from '@/lib/types';
 import {
   Search,
   FileText,
   Code,
   MessageSquare,
-  Lightbulb,
   AlertCircle,
   X,
 } from 'lucide-react';
@@ -127,7 +126,7 @@ export function IntelligenceSearch({ project, feedback }: IntelligenceSearchProp
         <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-slate-200 rounded-lg shadow-xl z-10 max-h-96 overflow-y-auto">
           {results.length === 0 ? (
             <div className="p-6 text-center text-slate-500">
-              <p>No results for "{searchQuery}"</p>
+              <p>No results for &quot;{searchQuery}&quot;</p>
             </div>
           ) : (
             <div className="divide-y">

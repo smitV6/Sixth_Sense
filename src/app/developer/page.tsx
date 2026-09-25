@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useProjectStore } from '@/lib/project-store';
-import { AlertCircle, AlertTriangle, Info, GitBranch, TrendingUp, Clock, Sparkles, ArrowRight } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Sparkles, ArrowRight } from 'lucide-react';
 
 export default function DeveloperDashboard() {
   const projects = useProjectStore(state => state.projects);
@@ -59,7 +59,7 @@ export default function DeveloperDashboard() {
       </Link>
 
       <div>
-        <p className="text-slate-600 text-lg">Here's what Sixth Sense noticed across your projects.</p>
+        <p className="text-slate-600 text-lg">Here&apos;s what Sixth Sense noticed across your projects.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

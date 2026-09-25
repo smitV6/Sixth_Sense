@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Zap, BarChart3, MessageSquare, TrendingUp } from 'lucide-react';
+import { ArrowRight, Zap, BarChart3, MessageSquare, TrendingUp, ArrowDown } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -18,7 +18,7 @@ export default function Home() {
       <main className="pt-16">
         <section className="py-24 px-6 bg-gradient-to-b from-slate-50 to-white">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">Your product's sixth sense.</h1>
+            <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">Your product&apos;s sixth sense.</h1>
             <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">
               Know what was requested. See what was built. Understand what users want. Know what to do next.
             </p>
@@ -29,14 +29,17 @@ export default function Home() {
               >
                 Try Sixth Sense <ArrowRight className="w-5 h-5" />
               </Link>
-              <button className="px-8 py-4 border-2 border-slate-300 text-slate-900 rounded-lg hover:border-indigo-600 hover:text-indigo-600 transition font-semibold">
-                See How It Works
-              </button>
+              <a
+                href="#how-it-works"
+                className="px-8 py-4 border-2 border-slate-300 text-slate-900 rounded-lg hover:border-indigo-600 hover:text-indigo-600 transition font-semibold inline-flex items-center gap-2"
+              >
+                See How It Works <ArrowDown className="w-5 h-5" />
+              </a>
             </div>
           </div>
         </section>
 
-        <section className="py-16 px-6 bg-white">
+        <section id="how-it-works" className="py-16 px-6 bg-white scroll-mt-20">
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-center gap-2 text-center text-sm font-semibold">
               <div className="flex-1 bg-indigo-50 p-4 rounded-xl text-slate-900">CLIENT REQUIREMENTS</div>

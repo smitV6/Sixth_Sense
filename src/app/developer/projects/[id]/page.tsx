@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useProjectStore } from '@/lib/project-store';
 import {
   BarChart3,
@@ -10,7 +10,6 @@ import {
   GitBranch,
   Package,
   Activity,
-  Clock,
   TrendingUp,
   Zap,
 } from 'lucide-react';
@@ -22,21 +21,23 @@ interface ProjectPageProps {
 export default function ProjectWorkspace({ params }: ProjectPageProps) {
   const [activeTab, setActiveTab] = useState('overview');
   const [resolvedParams, setResolvedParams] = useState<{ id: string } | null>(null);
+  const getProject = useProjectStore(state => state.getProject);
 
-  // Handle async params
-  if (!resolvedParams) {
+  useEffect(() => {
     params.then(p => setResolvedParams(p));
+  }, [params]);
+
+  if (!resolvedParams) {
     return <div className="p-8 text-slate-600">Loading project...</div>;
   }
 
-  const getProject = useProjectStore(state => state.getProject);
   const project = getProject(resolvedParams.id);
 
   if (!project) {
     return (
       <div className="p-8 text-center">
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Project not found</h2>
-        <p className="text-slate-600">The project you're looking for doesn't exist.</p>
+        <p className="text-slate-600">The project you&apos;re looking for doesn&apos;t exist.</p>
       </div>
     );
   }
@@ -407,7 +408,7 @@ export default function ProjectWorkspace({ params }: ProjectPageProps) {
                           {commit.developer} • {new Date(commit.timestamp).toLocaleDateString()}
                         </div>
                         <div className="text-xs text-amber-700 mt-2">
-                          This commit could not be automatically matched to a requirement. Review if it's part of scope.
+                          This commit could not be automatically matched to a requirement. Review if it&apos;s part of scope.
                         </div>
                       </div>
                     ))}

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ProjectFormStep } from '@/components/client/project-wizard/project-form-step';
 import { ProjectAnalyzingStep } from '@/components/client/project-wizard/project-analyzing-step';
 import { ProjectResultsStep } from '@/components/client/project-wizard/project-results-step';
-import { ProjectFormInput } from '@/lib/types';
+import { ProjectFormInput, PriorityLevel } from '@/lib/types';
 import { analyzeProjectRequirements, generateProjectTimeline } from '@/lib/ai-service';
 import { useProjectStore } from '@/lib/project-store';
 import { AIAnalysisResult } from '@/lib/ai-service';
@@ -41,7 +41,7 @@ export default function NewProjectPage() {
       platform: formData.platform || 'web' as const,
       deadline: formData.deadline,
       coreRequirements: analysisResult.coreRequirements,
-      addedRequirements: addedRequirements.map((req, i) => ({
+      addedRequirements: addedRequirements.map(req => ({
         ...req,
         status: 'pending' as const,
         priority: (
@@ -50,7 +50,7 @@ export default function NewProjectPage() {
             's2': 'high',
             's3': 'medium',
             's4': 'high',
-          } as Record<string, any>
+          } as Record<string, PriorityLevel>
         )[req.id] || 'medium',
       })),
       optionalAddOns: analysisResult.optionalAddOns.map(ao =>

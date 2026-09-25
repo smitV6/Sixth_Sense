@@ -33,9 +33,6 @@ export function MissingRequirements({
     addToast('Requirement added ✓', 'success');
   };
 
-  const pendingSuggestions = suggestions.filter(
-    s => !addedSuggestions.has(s.id) && !dismissedSuggestions.has(s.id),
-  );
   const addedCount = suggestions.filter(s => addedSuggestions.has(s.id)).length;
 
   return (
@@ -45,7 +42,7 @@ export function MissingRequirements({
         Sixth Sense noticed...
       </h2>
       <p className="text-slate-700 mb-6">
-        These requirements weren't explicitly mentioned, but may be important for your product.
+        These requirements weren&apos;t explicitly mentioned, but may be important for your product.
       </p>
 
       <div className="space-y-4">

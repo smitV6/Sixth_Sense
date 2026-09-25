@@ -7,8 +7,6 @@ import {
   MessageSquare,
   AlertCircle,
   Sparkles,
-  Zap,
-  GitCommit,
   Clock,
 } from 'lucide-react';
 
@@ -74,12 +72,12 @@ export function IntelligenceTimeline({ project, feedback }: IntelligenceTimeline
 
   Object.entries(feedbackClusters)
     .slice(0, 3)
-    .forEach(([category, items]) => {
+    .forEach(([category, items], index) => {
       events.push({
         id: `feedback-${category}`,
         type: 'feedback',
         label: `User feedback: ${category}`,
-        timestamp: project.createdAt + Math.random() * 86400000,
+        timestamp: project.createdAt + (index + 1) * 86400000,
         description: `${items.length} reports in ${category} category`,
       });
     });

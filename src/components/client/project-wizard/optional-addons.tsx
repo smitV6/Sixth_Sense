@@ -13,7 +13,7 @@ export function OptionalAddOns({ addOns, onAdd, addedAddOns }: OptionalAddOnsPro
   return (
     <div>
       <h2 className="text-2xl font-bold text-slate-900 mb-3">Want to take it further?</h2>
-      <p className="text-slate-600 mb-6">These features aren't required for the core product, but could improve the experience.</p>
+      <p className="text-slate-600 mb-6">These features aren&apos;t required for the core product, but could improve the experience.</p>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {addOns.map(addOn => (

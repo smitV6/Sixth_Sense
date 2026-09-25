@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AIAnalysisResult } from '@/lib/ai-service';
-import { ProjectFormInput, Requirement } from '@/lib/types';
+import { ProjectFormInput } from '@/lib/types';
 import { AnalysisSummary } from './analysis-summary';
 import { CoreRequirements } from './core-requirements';
 import { MissingRequirements } from './missing-requirements';
@@ -17,7 +17,7 @@ interface ProjectResultsStepProps {
   onFinalize: (addedRequirements: { id: string; name: string; description: string }[], addedAddOns: string[]) => void;
 }
 
-export function ProjectResultsStep({ analysis, formData, onFinalize }: ProjectResultsStepProps) {
+export function ProjectResultsStep({ analysis, onFinalize }: ProjectResultsStepProps) {
   const router = useRouter();
   const [addedSuggestions, setAddedSuggestions] = useState<Set<string>>(new Set());
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Set<string>>(new Set());
@@ -61,10 +61,6 @@ export function ProjectResultsStep({ analysis, formData, onFinalize }: ProjectRe
       router.push(`/client/projects/new/success`);
     }, 100);
   };
-
-  const pendingSuggestions = analysis.missingRequirements.filter(
-    s => !addedSuggestions.has(s.id) && !dismissedSuggestions.has(s.id),
-  );
 
   return (
     <div className="space-y-8">

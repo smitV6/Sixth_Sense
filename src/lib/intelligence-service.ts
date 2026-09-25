@@ -321,7 +321,7 @@ export function generateSprintSuggestion(
       id: `task-${idx}`,
       title: rec.action,
       description: rec.reasoning.join(' '),
-      priority: rec.priority as any,
+      priority: rec.priority as 'critical' | 'high' | 'medium' | 'low',
       reason: rec.reasoning[0] || rec.action,
       relatedRequirementId: rec.relatedRequirementId,
       relatedFeedback: rec.relatedFeedback,
