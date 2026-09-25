@@ -6,13 +6,12 @@ import { useProjectStore } from '@/lib/project-store';
 import { useToastStore } from '@/lib/toast-store';
 import { ArrowRight, Clock, CheckCircle, XCircle, HelpCircle } from 'lucide-react';
 
-const CURRENT_DEVELOPER_ID = '1'; // Alex Sharma
-
 export default function ClientRequestsPage() {
+  const currentDeveloperId = useProjectStore(state => state.currentDeveloperId);
   const getDeveloperRequests = useProjectStore(state => state.getDeveloperRequests);
   const updateDeveloperRequest = useProjectStore(state => state.updateDeveloperRequest);
   const { addToast } = useToastStore();
-  const requests = getDeveloperRequests(CURRENT_DEVELOPER_ID);
+  const requests = getDeveloperRequests(currentDeveloperId);
   const [showModal, setShowModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState<'accept' | 'reject' | 'clarify' | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
@@ -29,10 +28,10 @@ export default function ClientRequestsPage() {
     if (!selectedProjectId) return;
 
     if (selectedAction === 'accept') {
-      updateDeveloperRequest(selectedProjectId, CURRENT_DEVELOPER_ID, 'accepted');
+      updateDeveloperRequest(selectedProjectId, currentDeveloperId, 'accepted');
       addToast('Project accepted! You can now start development.', 'success');
     } else if (selectedAction === 'reject') {
-      updateDeveloperRequest(selectedProjectId, CURRENT_DEVELOPER_ID, 'rejected');
+      updateDeveloperRequest(selectedProjectId, currentDeveloperId, 'rejected');
       addToast('Project rejected. The client will be notified.', 'success');
     } else if (selectedAction === 'clarify') {
       if (clarifyMessage.trim()) {

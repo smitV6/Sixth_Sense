@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
+import { useProjectStore } from '@/lib/project-store';
+import { MOCK_DEVELOPERS } from '@/lib/mock-developers';
 
 interface NavItem {
   href: string;
@@ -14,7 +16,12 @@ interface NavItem {
 
 export function DashboardShell({ children, userRole, userName }: { children: React.ReactNode; userRole: 'client' | 'developer'; userName: string }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showDeveloperMenu, setShowDeveloperMenu] = useState(false);
   const pathname = usePathname();
+  const currentDeveloperId = useProjectStore(state => state.currentDeveloperId);
+  const setCurrentDeveloper = useProjectStore(state => state.setCurrentDeveloper);
+
+  const currentDeveloper = MOCK_DEVELOPERS.find(d => d.id === currentDeveloperId) || MOCK_DEVELOPERS[0];
 
   const clientNav: NavItem[] = [
     { href: '/client', label: 'Dashboard', icon: '📊' },
@@ -116,6 +123,40 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
               Good morning, {userName} 👋
             </h1>
           </div>
+
+          {userRole === 'developer' && (
+            <div className="relative">
+              <button
+                onClick={() => setShowDeveloperMenu(!showDeveloperMenu)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition"
+              >
+                <span className="text-sm font-medium text-slate-900">Viewing as: {currentDeveloper.name}</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showDeveloperMenu ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showDeveloperMenu && (
+                <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg z-50">
+                  {MOCK_DEVELOPERS.map(dev => (
+                    <button
+                      key={dev.id}
+                      onClick={() => {
+                        setCurrentDeveloper(dev.id);
+                        setShowDeveloperMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 text-sm border-b border-slate-100 last:border-b-0 transition ${
+                        dev.id === currentDeveloperId
+                          ? 'bg-indigo-50 font-semibold text-indigo-700'
+                          : 'hover:bg-slate-50 text-slate-900'
+                      }`}
+                    >
+                      <div className="font-medium">{dev.name}</div>
+                      <div className="text-xs text-slate-600">{dev.title}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Page Content */}

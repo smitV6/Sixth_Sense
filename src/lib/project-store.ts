@@ -11,6 +11,7 @@ interface ProjectStore {
   projects: Project[];
   developerRequests: DeveloperRequest[];
   products: Product[];
+  currentDeveloperId: string;
 
   createProject: (project: Project) => void;
   getProject: (id: string) => Project | undefined;
@@ -23,6 +24,7 @@ interface ProjectStore {
   addDeveloperRequest: (request: DeveloperRequest) => void;
   getDeveloperRequests: (developerId: string) => (DeveloperRequest & { project: Project })[];
   updateDeveloperRequest: (projectId: string, developerId: string, status: 'accepted' | 'rejected') => void;
+  setCurrentDeveloper: (developerId: string) => void;
 
   // Product methods
   getProduct: (id: string) => Product | undefined;
@@ -55,6 +57,7 @@ export const useProjectStore = create<ProjectStore>()(
       projects: INITIAL_PROJECTS,
       developerRequests: [],
       products: INITIAL_PRODUCTS,
+      currentDeveloperId: '1',
 
       createProject: project => set(state => ({ projects: [project, ...state.projects] })),
 
@@ -192,6 +195,8 @@ export const useProjectStore = create<ProjectStore>()(
           get().updateProject(projectId, { status: 'ready_for_development' });
         }
       },
+
+      setCurrentDeveloper: (developerId: string) => set({ currentDeveloperId: developerId }),
     }),
     {
       name: 'sixth-sense-projects',

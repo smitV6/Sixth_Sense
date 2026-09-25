@@ -27,7 +27,10 @@
       "Bash(vercel --prod --yes)",
       "Bash(vercel link *)",
       "Bash(curl -s -o /dev/null -w \"HTTP Status: %{http_code}\\\\n\" https://sixth-sense-xok9.vercel.app)",
-      "Bash(curl -s https://sixth-sense-xok9.vercel.app)"
+      "Bash(curl -s https://sixth-sense-xok9.vercel.app)",
+      "Bash(git pull *)",
+      "Bash(git restore *)",
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")"
     ]
   }
 }
