@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useProjectStore } from '@/lib/project-store';
+import { useToastStore } from '@/lib/toast-store';
 import { MOCK_FEEDBACK } from '@/lib/mock-feedback-data';
 import {
   analyzeRequirementIntelligence,
@@ -29,10 +30,13 @@ const CURRENT_PROJECT_ID = 'stylecart-dev';
 
 export default function IntelligenceHubPage() {
   const getProject = useProjectStore(state => state.getProject);
+  const { addToast } = useToastStore();
   const project = getProject(CURRENT_PROJECT_ID);
   const [expandedSection, setExpandedSection] = useState<string>('signals');
   const [showSprintGenerator, setShowSprintGenerator] = useState(false);
   const [showExplanation, setShowExplanation] = useState<string | null>(null);
+  const [selectedDetails, setSelectedDetails] = useState<string | null>(null);
+  const [acceptedSprint, setAcceptedSprint] = useState(false);
 
   if (!project) {
     return <div className="text-center py-12">Project not found</div>;
@@ -274,11 +278,21 @@ export default function IntelligenceHubPage() {
 
                   <div className="mt-4 flex gap-2">
                     {opp.recommendation === 'add_to_scope' && (
-                      <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium transition">
+                      <button
+                        onClick={() => {
+                          addToast(`Added "${opp.feature}" to scope for review`, 'success');
+                        }}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium transition"
+                      >
                         Add to Scope
                       </button>
                     )}
-                    <button className="px-4 py-2 border-2 border-slate-300 text-slate-900 rounded-lg hover:bg-slate-50 text-sm font-medium transition">
+                    <button
+                      onClick={() => {
+                        addToast(`Viewing details for: ${opp.feature}`, 'info');
+                      }}
+                      className="px-4 py-2 border-2 border-slate-300 text-slate-900 rounded-lg hover:bg-slate-50 text-sm font-medium transition"
+                    >
                       Learn More
                     </button>
                   </div>
@@ -348,13 +362,30 @@ export default function IntelligenceHubPage() {
                     <p className="text-sm text-slate-600 mb-3">{rec.impact}</p>
 
                     <div className="flex gap-3">
-                      <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium transition">
+                      <button
+                        onClick={() => {
+                          addToast(`Started work on: ${rec.action}`, 'success');
+                        }}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium transition"
+                      >
                         Start Work
                       </button>
-                      <button className="px-4 py-2 border-2 border-slate-300 text-slate-900 rounded-lg hover:bg-slate-50 text-sm font-medium transition">
-                        Details
+                      <button
+                        onClick={() => setSelectedDetails(selectedDetails === rec.id ? null : rec.id)}
+                        className="px-4 py-2 border-2 border-slate-300 text-slate-900 rounded-lg hover:bg-slate-50 text-sm font-medium transition"
+                      >
+                        {selectedDetails === rec.id ? 'Hide' : 'Details'}
                       </button>
                     </div>
+                    {selectedDetails === rec.id && (
+                      <div className="mt-3 p-4 bg-slate-50 rounded-lg border-2 border-slate-200">
+                        <div className="text-sm font-semibold text-slate-900 mb-2">Recommendation Details</div>
+                        <p className="text-sm text-slate-700">{rec.impact}</p>
+                        <div className="mt-2 text-xs text-slate-600">
+                          <strong>Effort:</strong> {rec.estimatedEffort || 'medium'}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -428,10 +459,25 @@ export default function IntelligenceHubPage() {
             </div>
 
             <div className="flex gap-3 pt-6 border-t-2 border-indigo-200">
-              <button className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold transition">
-                Accept Sprint
+              <button
+                onClick={() => {
+                  setAcceptedSprint(true);
+                  addToast('Sprint accepted! Ready to start development.', 'success');
+                }}
+                className={`flex-1 px-6 py-3 rounded-lg font-semibold transition ${
+                  acceptedSprint
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                }`}
+              >
+                {acceptedSprint ? '✓ Sprint Accepted' : 'Accept Sprint'}
               </button>
-              <button className="flex-1 px-6 py-3 border-2 border-slate-300 text-slate-900 rounded-lg hover:bg-slate-50 font-semibold transition">
+              <button
+                onClick={() => {
+                  addToast('Sprint editing not yet available. Use "Accept Sprint" to proceed.', 'info');
+                }}
+                className="flex-1 px-6 py-3 border-2 border-slate-300 text-slate-900 rounded-lg hover:bg-slate-50 font-semibold transition"
+              >
                 Edit & Customize
               </button>
             </div>
