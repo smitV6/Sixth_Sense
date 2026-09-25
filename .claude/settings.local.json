@@ -6,7 +6,8 @@
       "Bash(npx shadcn@latest init -d --yes --no-reinstall)",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(npm run *)"
     ]
   }
 }

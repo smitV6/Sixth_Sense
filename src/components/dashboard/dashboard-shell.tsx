@@ -10,8 +10,8 @@ export function DashboardShell({ children, userRole, userName }: { children: Rea
   const clientNav = [
     { href: '/client', label: 'Dashboard', icon: '📊' },
     { href: '/client/projects', label: 'My Projects', icon: '📁' },
-    { href: '/client/create', label: 'Create Project', icon: '➕' },
-    { href: '/client/find-developers', label: 'Find Developers', icon: '👥' },
+    { href: '/client/projects/new', label: 'Create Project', icon: '➕' },
+    { href: '/client/developers', label: 'Find Developers', icon: '👥' },
     { href: '/client/suggestions', label: 'AI Suggestions', icon: '💡' },
     { href: '/client/messages', label: 'Messages', icon: '💬' },
     { href: '/client/profile', label: 'Profile', icon: '⚙️' },
