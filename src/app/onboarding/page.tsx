@@ -48,7 +48,7 @@ export default function Onboarding() {
           <div className="group bg-white rounded-3xl shadow-lg border-2 border-slate-200 hover:border-violet-400 hover:shadow-xl transition p-12">
             <Code className="w-16 h-16 text-violet-600 mb-6" />
             <h2 className="text-2xl font-bold text-slate-900 mb-4">Developer</h2>
-            <p className="text-slate-600 mb-8 font-semibold text-lg">Build better products with continuous AI intelligence.</p>
+            <p className="text-slate-600 mb-8 font-semibold text-lg">Build better products with continuous AI help.</p>
             <ul className="space-y-3 mb-12">
               <li className="flex items-center gap-3 text-slate-700">
                 <span className="w-2 h-2 bg-violet-600 rounded-full"></span>
